@@ -123,6 +123,7 @@ body.dark .bar{background:#17131f}
     <div class="row">
       <button class="sub" id="exportBtn">⬇️ 書き出す</button>
       <button class="sub" id="importBtn">⬆️ 読み込む</button>
+      <button class="sub" id="closeSetBtn">✕ 閉じる</button>
     </div>
     <input type="file" id="importFile" accept="application/json" class="hidden">
   </section>
@@ -159,15 +160,29 @@ function esc(s){return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&l
 function daysSince(d){const t=new Date();t.setHours(0,0,0,0);const p=new Date(d+"T00:00:00");return Math.round((t-p)/86400000)}
 function stationKey(e){return e.name+"|"+e.pref}
 /* --- 駅名サジェスト --- */
-function norm(s){return String(s||"").replace(/^道の駅\s*/,"").replace(/\s+/g,"")}
+function kana(s){return String(s||"").replace(/[ァ-ヶ]/g,c=>String.fromCharCode(c.charCodeAt(0)-0x60))}
+function norm(s){return kana(String(s||"").replace(/^道の駅\s*/,"")).replace(/[\s・,、\-ー]/g,"").toLowerCase()}
+function subseq(q,t){let i=0;for(const ch of t){if(ch===q[i])i++;if(i>=q.length)return true}return q.length>0&&i>=q.length}
 fName.addEventListener("input",()=>{
-  const q=norm(fName.value.trim());
+  const raw=fName.value.trim();
+  const q=norm(raw);
   if(!q){sugList.classList.add("hidden");sugList.innerHTML="";return}
-  const hits=STATIONS.filter(s=>norm(s.name).includes(q)).slice(0,8);
+  const scored=[];
+  STATIONS.forEach((s,idx)=>{
+    const n=norm(s.name);
+    let score=-1;
+    if(n.startsWith(q))score=0;
+    else if(n.includes(q))score=1+n.indexOf(q);
+    else if(norm(s.pref).includes(q))score=50;
+    else if(q.length>=2&&subseq(q,n))score=100;
+    if(score>=0)scored.push({s:s,idx:idx,score:score});
+  });
+  scored.sort((a,b)=>a.score-b.score||a.idx-b.idx);
+  const hits=scored.slice(0,10);
   if(!hits.length){sugList.classList.add("hidden");sugList.innerHTML="";return}
-  sugList.innerHTML=hits.map((s,i)=>'<div class="sugitem" data-i="'+STATIONS.indexOf(s)+'">'+esc(s.name)+'<span class="p">'+esc(s.pref)+'</span></div>').join("");
+  sugList.innerHTML=hits.map(h=>'<div class="sugitem" data-i="'+h.idx+'">'+esc(h.s.name)+'<span class="p">'+esc(h.s.pref)+'</span></div>').join("");
   sugList.classList.remove("hidden");
-  sugList.querySelectorAll(".sugitem").forEach(el=>el.addEventListener("mousedown",ev=>{
+  sugList.querySelectorAll(".sugitem").forEach(el=>el.addEventListener("pointerdown",ev=>{
     ev.preventDefault();
     const s=STATIONS[Number(el.dataset.i)];
     fName.value=s.name;fPref.value=s.pref;
@@ -242,6 +257,7 @@ $("addBtn").onclick=()=>{
 filterPref.onchange=render;
 $("darkBtn").onclick=()=>{document.body.classList.toggle("dark");localStorage.setItem(KEY+"-dark",document.body.classList.contains("dark")?"1":"0")};
 $("setBtn").onclick=()=>{const c=$("settingsCard");c.classList.toggle("hidden");if(!c.classList.contains("hidden"))c.scrollIntoView({behavior:"smooth",block:"start"})};
+$("closeSetBtn").onclick=()=>$("settingsCard").classList.add("hidden");
 $("exportBtn").onclick=()=>{
   const blob=new Blob([JSON.stringify({app:"michinoeki-checkin",version:2,entries},null,2)],{type:"application/json"});
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);
