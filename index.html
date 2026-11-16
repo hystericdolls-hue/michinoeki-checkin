@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#faf5ff">
+<title>道の駅チェックイン | Happy Monster Select</title>
+<style>
+:root{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN',sans-serif;color:#302a42;background:#faf7ff}
+*{box-sizing:border-box}
+body{margin:0}
+body.dark{color:#eee9f7;background:#17131f}
+main{max-width:720px;margin:auto;padding:22px 16px 70px}
+header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+h1{font-size:25px;margin:0}
+.brand{font-size:12px;color:#8152c9;margin-top:5px}
+body.dark .brand{color:#b79ae0}
+.tagline{color:#776d89;font-size:13px;margin-top:10px}
+body.dark .tagline{color:#a79bbb}
+.iconbtns{display:flex;gap:8px}
+.iconbtn{border:1px solid #ece4f6;background:#fff;border-radius:12px;width:42px;height:42px;font-size:18px;cursor:pointer}
+body.dark .iconbtn{background:#241c33;border-color:#3a2f52;color:#eee9f7}
+.card{background:#fff;border:1px solid #ece4f6;border-radius:19px;padding:18px;margin-top:15px;box-shadow:0 3px 14px #4b26700a}
+body.dark .card{background:#241c33;border-color:#3a2f52}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+.stat{padding:12px;border-radius:12px;background:#f4edff}
+body.dark .stat{background:#2e2444}
+.stat small{color:#776d89}
+body.dark .stat small{color:#a79bbb}
+.stat strong{display:block;font-size:22px;margin-top:5px;color:#7247bc}
+body.dark .stat strong{color:#c4aef0}
+label{display:block;font-size:13px;color:#776d89;margin-top:14px}
+body.dark label{color:#a79bbb}
+input,select,textarea{width:100%;margin-top:6px;padding:12px;border:1px solid #ddd2f0;border-radius:12px;font-size:16px;background:#fff;color:#302a42}
+body.dark input,body.dark select,body.dark textarea{background:#17131f;border-color:#3a2f52;color:#eee9f7}
+button.primary{border:0;border-radius:12px;background:#8656cf;color:#fff;padding:14px 16px;font-size:16px;font-weight:700;cursor:pointer;width:100%;margin-top:18px}
+button.sub{border:0;border-radius:12px;background:#e9e1f7;color:#5b4390;padding:11px 14px;font-size:14px;font-weight:700;cursor:pointer}
+body.dark button.sub{background:#3a2f52;color:#d9ccf5}
+.entry{display:flex;justify-content:space-between;gap:10px;padding:13px 2px;border-bottom:1px solid #f0eaf9}
+body.dark .entry{border-color:#3a2f52}
+.entry:last-child{border-bottom:0}
+.entry .name{font-weight:700;font-size:16px}
+.badge{display:inline-block;background:#f4edff;color:#7247bc;border-radius:999px;padding:2px 9px;font-size:12px;font-weight:700;margin-left:6px;vertical-align:2px}
+body.dark .badge{background:#2e2444;color:#c4aef0}
+.entry .meta{color:#776d89;font-size:13px;margin-top:3px}
+body.dark .entry .meta{color:#a79bbb}
+.entry .memo{font-size:14px;margin-top:5px;white-space:pre-wrap}
+.del{border:0;background:#fdecec;color:#c0392b;border-radius:10px;padding:8px 11px;font-size:13px;font-weight:700;cursor:pointer;height:fit-content}
+.empty{color:#776d89;text-align:center;padding:22px 0;font-size:14px}
+.row{display:flex;gap:9px}
+.row>*{flex:1}
+.hidden{display:none}
+.note{font-size:12px;color:#776d89;margin-top:14px;line-height:1.7}
+body.dark .note{color:#a79bbb}
+h2{font-size:17px;margin:0 0 4px}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div>
+      <h1>🚐 道の駅チェックイン</h1>
+      <div class="brand">Happy Monster Select</div>
+    </div>
+    <div class="iconbtns">
+      <button class="iconbtn" id="darkBtn" title="ダークモード">🌙</button>
+      <button class="iconbtn" id="setBtn" title="バックアップ">⚙️</button>
+    </div>
+  </header>
+  <p class="tagline">立ち寄った道の駅を記録して、制覇を目指そう。</p>
+
+  <section class="card">
+    <div class="grid">
+      <div class="stat"><small>訪問した駅</small><strong><span id="stStations">0</span>駅</strong></div>
+      <div class="stat"><small>チェックイン回数</small><strong><span id="stCount">0</span>回</strong></div>
+      <div class="stat"><small>制覇した都道府県</small><strong><span id="stPrefs">0</span> / 47</strong></div>
+      <div class="stat"><small>前回のチェックイン</small><strong id="stLast">—</strong></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>チェックイン</h2>
+    <label>道の駅の名前<input id="fName" type="text" placeholder="例：道の駅 くしもと橋杭岩" autocomplete="off"></label>
+    <div class="row">
+      <div><label>都道府県<select id="fPref"></select></label></div>
+      <div><label>日付<input id="fDate" type="date"></label></div>
+    </div>
+    <label>ひとことメモ（任意）<textarea id="fMemo" rows="2" placeholder="例：夕日がきれいだった。車中泊OKの駐車場あり"></textarea></label>
+    <button class="primary" id="addBtn">📍 チェックインする</button>
+  </section>
+
+  <section class="card hidden" id="settingsCard">
+    <h2>バックアップ</h2>
+    <p class="note">記録はこの端末のブラウザ内にだけ保存されます。機種変更やブラウザのデータ消去で消えることがあるので、ときどき書き出しておくのがおすすめです。</p>
+    <div class="row">
+      <button class="sub" id="exportBtn">⬇️ 書き出す</button>
+      <button class="sub" id="importBtn">⬆️ 読み込む</button>
+    </div>
+    <input type="file" id="importFile" accept="application/json" class="hidden">
+  </section>
+
+  <section class="card">
+    <h2>訪問履歴</h2>
+    <label>都道府県で絞り込む<select id="filterPref"><option value="">すべて</option></select></label>
+    <div id="list"></div>
+    <div class="empty hidden" id="emptyMsg">まだチェックインがありません。<br>最初の道の駅を記録してみよう🚐</div>
+  </section>
+
+  <p class="note">※記録は端末のブラウザ内に保存されます。データを守るため、定期的なバックアップをおすすめします。<br>制作：Happy Monster Select</p>
+</main>
+<script>
+const PREFS=["北海道","青森県","岩手県","宮城県","秋田県","山形県","福島県","茨城県","栃木県","群馬県","埼玉県","千葉県","東京都","神奈川県","新潟県","富山県","石川県","福井県","山梨県","長野県","岐阜県","静岡県","愛知県","三重県","滋賀県","京都府","大阪府","兵庫県","奈良県","和歌山県","鳥取県","島根県","岡山県","広島県","山口県","徳島県","香川県","愛媛県","高知県","福岡県","佐賀県","長崎県","熊本県","大分県","宮崎県","鹿児島県","沖縄県"];
+const KEY="michinoeki-checkin-v1";
+let entries=[];
+try{entries=JSON.parse(localStorage.getItem(KEY)||"[]")}catch(e){entries=[]}
+const $=id=>document.getElementById(id);
+const fPref=$("fPref"),filterPref=$("filterPref");
+PREFS.forEach(p=>{fPref.add(new Option(p,p));filterPref.add(new Option(p,p))});
+fPref.value="和歌山県";
+$("fDate").value=new Date().toLocaleDateString("sv-SE");
+if(localStorage.getItem(KEY+"-dark")==="1")document.body.classList.add("dark");
+function save(){localStorage.setItem(KEY,JSON.stringify(entries))}
+function daysSince(d){const t=new Date();t.setHours(0,0,0,0);const p=new Date(d+"T00:00:00");return Math.round((t-p)/86400000)}
+function render(){
+  const uniq=new Set(entries.map(e=>e.name+"|"+e.pref));
+  const prefs=new Set(entries.map(e=>e.pref));
+  $("stStations").textContent=uniq.size;
+  $("stCount").textContent=entries.length;
+  $("stPrefs").textContent=prefs.size;
+  if(entries.length){
+    const last=[...entries].sort((a,b)=>b.date<a.date?-1:1)[0].date;
+    const ds=daysSince(last);
+    $("stLast").textContent=ds===0?"今日":ds+"日前";
+  }else{$("stLast").textContent="—"}
+  const f=filterPref.value;
+  const rows=entries.filter(e=>!f||e.pref===f).sort((a,b)=>b.date<a.date?-1:b.date>a.date?1:0);
+  $("list").innerHTML=rows.map(e=>
+    '<div class="entry"><div><span class="name">'+esc(e.name)+'</span><span class="badge">'+esc(e.pref)+'</span>'+
+    '<div class="meta">'+esc(e.date)+'</div>'+
+    (e.memo?'<div class="memo">'+esc(e.memo)+'</div>':'')+
+    '</div><button class="del" data-id="'+e.id+'">削除</button></div>').join("");
+  $("emptyMsg").classList.toggle("hidden",entries.length>0);
+  document.querySelectorAll(".del").forEach(b=>b.onclick=()=>{
+    if(confirm("このチェックインを削除しますか？")){entries=entries.filter(x=>x.id!==b.dataset.id);save();render()}
+  });
+}
+function esc(s){return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+$("addBtn").onclick=()=>{
+  const name=$("fName").value.trim();
+  if(!name){alert("道の駅の名前を入れてください");return}
+  const date=$("fDate").value||new Date().toLocaleDateString("sv-SE");
+  entries.push({id:Date.now()+"-"+Math.random().toString(36).slice(2,7),name,pref:fPref.value,date,memo:$("fMemo").value.trim()});
+  save();render();
+  $("fName").value="";$("fMemo").value="";
+};
+filterPref.onchange=render;
+$("darkBtn").onclick=()=>{document.body.classList.toggle("dark");localStorage.setItem(KEY+"-dark",document.body.classList.contains("dark")?"1":"0")};
+$("setBtn").onclick=()=>$("settingsCard").classList.toggle("hidden");
+$("exportBtn").onclick=()=>{
+  const blob=new Blob([JSON.stringify({app:"michinoeki-checkin",version:1,entries},null,2)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);
+  a.download="michinoeki-checkin-backup-"+new Date().toLocaleDateString("sv-SE")+".json";a.click();URL.revokeObjectURL(a.href);
+};
+$("importBtn").onclick=()=>$("importFile").click();
+$("importFile").onchange=ev=>{
+  const file=ev.target.files[0];if(!file)return;
+  const r=new FileReader();
+  r.onload=()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d.entries))throw 0;
+    if(confirm("今の記録を、読み込んだバックアップで置き換えますか？")){entries=d.entries;save();render();alert("読み込みました")}
+  }catch(e){alert("バックアップファイルとして読み込めませんでした")}};
+  r.readAsText(file);ev.target.value="";
+};
+render();
+</script>
+</body>
+</html>
