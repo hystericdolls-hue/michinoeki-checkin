@@ -86,6 +86,7 @@ body.dark .bar{background:#17131f}
     </div>
     <div class="iconbtns">
       <button class="iconbtn" id="darkBtn" title="ダークモード">🌙</button>
+      <button class="iconbtn" id="helpBtn" title="使い方">？</button>
       <button class="iconbtn" id="setBtn" title="バックアップ">⚙️</button>
     </div>
   </header>
@@ -126,6 +127,17 @@ body.dark .bar{background:#17131f}
       <button class="sub" id="closeSetBtn">✕ 閉じる</button>
     </div>
     <input type="file" id="importFile" accept="application/json" class="hidden">
+  </section>
+
+  <section class="card hidden" id="helpCard">
+    <h2>使い方</h2>
+    <p class="hint" style="margin-top:0"><b>■ チェックインのしかた</b><br>駅名を入力して候補から選ぶと、都道府県は自動で入ります。日付とメモ（任意）を入れて「チェックインする」を押すだけです。</p>
+    <p class="hint"><b>■ 検索のコツ</b><br>駅名は漢字でも読みでも探せます（例：「あじむのさと」「はしぐいいわ」）。都道府県名（例：「わかやま」）で、その県の駅を一覧することもできます。候補に出ない駅は、そのまま手入力して都道府県を自分で選んでください。</p>
+    <p class="hint"><b>■ 日付が分からないとき</b><br>「日付不明」にチェックすると、日付なしで記録できます。回数や制覇の集計には入りますが、「前回から◯日」の計算には使いません。</p>
+    <p class="hint"><b>■ 統計の見方</b><br>「完全制覇」は、その都道府県の全駅を訪問した数です。県ごとの進み具合は下のバーで確認できます（全駅制覇の県には🏆）。同じ駅に何度も行くと「通算◯回」と表示されます。</p>
+    <p class="hint"><b>■ バックアップ（大事です）</b><br>記録はこの端末の中にだけ保存されます。機種変更やブラウザのデータ削除で消えてしまうので、⚙️設定の「書き出し」で時々ファイルに保存してください。「読み込み」でいつでも復元できます。</p>
+    <p class="hint"><b>■ 駅データについて</b><br>国土交通省「道の駅」一覧（2026年9月4日現在・全1,234駅）をもとにしています。駅名の読みは機械変換のため、一部違う場合があります。</p>
+    <button class="sub" id="closeHelpBtn">✕ 閉じる</button>
   </section>
 
   <section class="card hidden" id="progCard">
@@ -265,6 +277,8 @@ filterPref.onchange=render;
 $("darkBtn").onclick=()=>{document.body.classList.toggle("dark");localStorage.setItem(KEY+"-dark",document.body.classList.contains("dark")?"1":"0")};
 $("setBtn").onclick=()=>{const c=$("settingsCard");c.classList.toggle("hidden");if(!c.classList.contains("hidden"))c.scrollIntoView({behavior:"smooth",block:"start"})};
 $("closeSetBtn").onclick=()=>{$("settingsCard").classList.add("hidden");window.scrollTo({top:0,behavior:"smooth"})};
+$("helpBtn").onclick=()=>{const c=$("helpCard");c.classList.toggle("hidden");if(!c.classList.contains("hidden")){$("settingsCard").classList.add("hidden");c.scrollIntoView({behavior:"smooth",block:"start"})}};
+$("closeHelpBtn").onclick=()=>{$("helpCard").classList.add("hidden");window.scrollTo({top:0,behavior:"smooth"})};
 $("exportBtn").onclick=()=>{
   const blob=new Blob([JSON.stringify({app:"michinoeki-checkin",version:2,entries},null,2)],{type:"application/json"});
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);
